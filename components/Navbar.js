@@ -42,7 +42,7 @@ const Navbar = () => {
 									tracking-widest
 									text-green-400"
 									>
-										Orbit
+										Collector
 									</span>
 								</a>
 							</div>
