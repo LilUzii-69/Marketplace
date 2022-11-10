@@ -35,6 +35,8 @@ export default function MyAssets() {
     const items = await Promise.all(
       data.map(async (i) => {
         const tokenUri = await tokenContract.tokenURI(i.tokenId);
+        const tokenName = await tokenContract.tokenName(i.tokenId);
+        const tokenDescription = await tokenContract.tokenDesc(i.tokenId);
 
         let price = ethers.utils.formatUnits(i.price.toString(), "ether");
         let item = {
@@ -44,8 +46,8 @@ export default function MyAssets() {
           seller: i.seller,
           owner: i.owner,
           image: tokenUri,
-          name: tokenUri,
-          description: tokenUri,
+          name: tokenName,
+          description: tokenDescription,
         };
         return item;
       })
@@ -65,8 +67,12 @@ export default function MyAssets() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-4">
           {nfts.map((nft, i) => (
             <div key={i} className="shadow rounded-xl overflow-hidden">
-              <div className="h-64 w-full relative sm:h-64 md:h-96 lg:h-96 xl:h-96">
-                <img src={nft.image} alt={(nft.name, nft.description)} />
+              <div className="w-full relative ">
+                <img
+                  src={nft.image}
+                  alt={(nft.name, nft.description)}
+                  style={{ height: "300px", width: "100%", objectFit: "cover" }}
+                />
               </div>
               <div className="p-4 bg-black">
                 <p className="text-2xl font-bold text-white">

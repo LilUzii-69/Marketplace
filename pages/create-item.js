@@ -10,7 +10,7 @@ import NFT from "../artifacts/contracts/NFT.sol/NFT.json";
 import Market from "../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
 
 export default function CreateItem() {
-  const [fileUrl, setFileUrl] = useState(null);
+  const [image, setImage] = useState(null);
   const [formInput, updateFormInput] = useState({
     price: "",
     name: "",
@@ -22,7 +22,7 @@ export default function CreateItem() {
   async function onChange(e) {
     const file = e.target.files[0];
     try {
-      setFileUrl(file);
+      setImage(file);
 
       setCreateObjectURL(URL.createObjectURL(file));
     } catch (error) {
@@ -30,23 +30,17 @@ export default function CreateItem() {
     }
   }
   async function createMarket() {
-    // const { name, description, price } = formInput;
-    // if (!name || !description || !price || !fileUrl) return;
-    // /* first, upload to IPFS */
+    const { name, description, price } = formInput;
+    if (!name || !description || !price || !image) return;
 
-    // try {
-    //   createSale(fileUrl);
-    // } catch (error) {
-    //   console.log("Error uploading file: ", error);
-    // }
+    // upload image locally
+    const body = new FormData();
+    body.append("file", image);
+    await axios.post("/api/image", body);
 
-    try {
-      const body = new FormData();
-      body.append("file", fileUrl);
-      const response = await axios.post("/api/image", body);
-    } catch (err) {
-      console.error("err", err);
-    }
+    const imageUrl = `http://localhost:3000/images/${image.name}`;
+
+    createSale(imageUrl);
   }
 
   async function createSale(url) {
@@ -57,7 +51,11 @@ export default function CreateItem() {
 
     /* next, create the item */
     let contract = new ethers.Contract(nftaddress, NFT.abi, signer);
-    let transaction = await contract.createToken(url);
+    let transaction = await contract.createToken(
+      url,
+      formInput.name,
+      formInput.description
+    );
     let tx = await transaction.wait();
     let event = tx.events[0];
     let value = event.args[2];
@@ -121,11 +119,21 @@ export default function CreateItem() {
           />
         </label>
 
-        {createObjectURL && (
-          <div className="h-96 w-96 relative mt-2">
-            <img src={createObjectURL} alt={"upload-image"} />
-          </div>
-        )}
+        <hr className="my-8" />
+
+        <div className={`w-96 relative my-2 mx-auto h-64`}>
+          {createObjectURL ? (
+            <img
+              src={createObjectURL}
+              alt={"upload-image"}
+              className="object-contain border-2 border-green-500 rounded-lg h-64 w-96 bg-gray-800"
+            />
+          ) : (
+            <div className="border-green-500 p-4 bg-gray-800 tracking-wider border-2 rounded-lg my-2 mx-auto text-white outline-none text-center h-64 w-96 flex items-center justify-center">
+              <div>No Image</div>
+            </div>
+          )}
+        </div>
 
         <button
           onClick={createMarket}

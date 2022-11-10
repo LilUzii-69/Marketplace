@@ -34,6 +34,8 @@ export default function Home() {
     const items = await Promise.all(
       data.map(async (i) => {
         const tokenUri = await tokenContract.tokenURI(i.tokenId);
+        const tokenName = await tokenContract.tokenName(i.tokenId);
+        const tokenDescription = await tokenContract.tokenDesc(i.tokenId);
 
         let price = ethers.utils.formatUnits(i.price.toString(), "ether");
         let item = {
@@ -43,8 +45,8 @@ export default function Home() {
           seller: i.seller,
           owner: i.owner,
           image: tokenUri,
-          name: tokenUri,
-          description: tokenUri,
+          name: tokenName,
+          description: tokenDescription,
         };
         return item;
       })
@@ -92,11 +94,15 @@ export default function Home() {
         <div className="p-10 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {nfts.map((nft, i) => (
             <div key={i} className="shadow rounded-xl overflow-hidden">
-              <div className="h-64 w-full relative sm:h-64 md:h-96 lg:h-96 xl:h-96">
+              <div className="w-full relative ">
                 <img
                   src={nft.image}
                   alt={(nft.name, nft.description)}
-                  style={{ width: "200px" }}
+                  style={{
+                    height: "240px",
+                    width: "357px",
+                    objectFit: "cover",
+                  }}
                 />
               </div>
 
