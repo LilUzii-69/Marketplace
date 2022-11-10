@@ -1,11 +1,8 @@
 import { useState } from "react";
 import { ethers } from "ethers";
-import { create as ipfsHttpClient } from "ipfs-http-client";
 import { useRouter } from "next/router";
 import Web3Modal from "web3modal";
-import Image from "next/image";
-
-const client = ipfsHttpClient("https://infura-ipfs.io:5001/api/v0");
+import axios from "axios";
 
 import { nftaddress, nftmarketaddress } from "../config";
 
@@ -20,26 +17,35 @@ export default function CreateItem() {
     description: "",
   });
   const router = useRouter();
+  const [createObjectURL, setCreateObjectURL] = useState(null);
 
   async function onChange(e) {
     const file = e.target.files[0];
     try {
-      setFileUrl(
-        "https://obs.line-scdn.net/0hnuOrIVlOMVpyCyXv3SlODUpdPStBbStTUG4uaAcLP25bJ3cETWtiOQMJbnZWMnELUm93PV4DbD1dOiZfTA/w644"
-      );
+      setFileUrl(file);
+
+      setCreateObjectURL(URL.createObjectURL(file));
     } catch (error) {
       console.log("Error uploading file: ", error);
     }
   }
   async function createMarket() {
-    const { name, description, price } = formInput;
-    if (!name || !description || !price || !fileUrl) return;
-    /* first, upload to IPFS */
+    // const { name, description, price } = formInput;
+    // if (!name || !description || !price || !fileUrl) return;
+    // /* first, upload to IPFS */
+
+    // try {
+    //   createSale(fileUrl);
+    // } catch (error) {
+    //   console.log("Error uploading file: ", error);
+    // }
 
     try {
-      createSale(fileUrl);
-    } catch (error) {
-      console.log("Error uploading file: ", error);
+      const body = new FormData();
+      body.append("file", fileUrl);
+      const response = await axios.post("/api/image", body);
+    } catch (err) {
+      console.error("err", err);
     }
   }
 
@@ -115,9 +121,9 @@ export default function CreateItem() {
           />
         </label>
 
-        {fileUrl && (
+        {createObjectURL && (
           <div className="h-96 w-96 relative mt-2">
-            <img src={fileUrl} alt={fileUrl} />
+            <img src={createObjectURL} alt={"upload-image"} />
           </div>
         )}
 
