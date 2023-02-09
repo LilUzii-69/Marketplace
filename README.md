@@ -26,3 +26,9 @@
     ```
 6. Open Metamask and go to the settings panel. In the advanced section, press the "Reset Account" button.
 7. You're done! The Collector Project is now deployed and ready to use.
+
+## Contact Information
+Name: Tanatat Tasanakanpaisan
+ID: 62130500255
+Tel: 0941122314
+Email: choreiwken@outlook.com
